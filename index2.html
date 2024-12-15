@@ -30,10 +30,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        h1 {
-            text-align: center;
-        }
-
         .product {
             display: flex;
             justify-content: space-between;
@@ -41,36 +37,6 @@
             margin-bottom: 15px;
             padding: 10px;
             border-bottom: 1px solid #ddd;
-            transition: transform 0.3s ease;
-        }
-
-        .product:hover {
-            transform: scale(1.02);
-        }
-
-        .product h2 {
-            margin: 0;
-            font-size: 1.2em;
-        }
-
-        .product p {
-            margin: 5px 0;
-            font-size: 0.9em;
-            color: #555;
-        }
-
-        .product button {
-            background: #f44336;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .product button:hover {
-            background: #e53935;
         }
 
         .cart-summary {
@@ -78,22 +44,9 @@
             text-align: center;
         }
 
-        .cart-summary h3 {
-            font-size: 1.2em;
-            color: #028090;
-        }
-
         .promo-code {
             margin-top: 20px;
             text-align: center;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background: #028090;
-            color: white;
         }
 
         .buy-button {
@@ -106,7 +59,6 @@
             font-size: 1.2em;
             border-radius: 5px;
             cursor: pointer;
-            transition: background 0.3s ease;
         }
 
         .buy-button:hover {
@@ -120,22 +72,12 @@
             font-size: 1.2em;
         }
 
-        .promo-code input {
+        footer {
+            text-align: center;
+            margin-top: 20px;
             padding: 10px;
-            font-size: 1em;
-        }
-
-        .promo-code button {
-            padding: 10px 15px;
             background: #028090;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
-        }
-
-        .promo-code button:hover {
-            background: #026877;
+            color: white;
         }
     </style>
 </head>
@@ -155,15 +97,13 @@
         <button onclick="applyPromoCode()">Применить промокод</button>
     </div>
 
-    <button class="buy-button" id="buyButton" disabled>Купить</button>
+    <button class="buy-button" id="buyButton" onclick="showPaymentMessage()">Купить</button>
 
     <div class="payment-message" id="paymentMessage">
-        Для покупки переведите <span id="totalPrice">0</span> руб. на <a href="https://donationalerts.com/r/teawithtrojan" target="_blank">этот сайт</a>.
+        Для покупки переведите <span id="totalPrice">0</span> руб. на <a href="https://donationalerts.com/r/teawithtrojan" target="_blank">этот сайт</a>
     </div>
 
-    <footer>
-        &copy; 2024 Магазин Чаёв
-    </footer>
+    <footer>&copy; 2024 Магазин Чаёв</footer>
 
     <script>
         // Функция для получения куки
@@ -180,31 +120,21 @@
             document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
         }
 
-        // Функция удаления товара из корзины
-        function removeFromCart(index) {
-            const cart = JSON.parse(getCookie('cart') || '[]');
-            cart.splice(index, 1);
-            setCookie('cart', JSON.stringify(cart), 7);
-            renderCart();
-        }
-
         // Функция отображения корзины
         function renderCart() {
             const cart = JSON.parse(getCookie('cart') || '[]');
             const cartContainer = document.getElementById('cart');
             const cartSummary = document.getElementById('cart-summary');
-            const buyButton = document.getElementById('buyButton');
 
             if (cart.length === 0) {
                 cartContainer.innerHTML = '<h2>Ваша корзина пуста</h2>';
                 cartSummary.innerHTML = '<h3>Итого: 0₽</h3>';
-                buyButton.disabled = true;
                 return;
             }
 
             let total = 0;
             cartContainer.innerHTML = '';
-            cart.forEach((item, index) => {
+            cart.forEach(item => {
                 const productDiv = document.createElement('div');
                 productDiv.className = 'product';
                 productDiv.innerHTML = `
@@ -212,32 +142,40 @@
                         <h2>${item.name}</h2>
                         <p>Цена: ${item.price}₽</p>
                     </div>
-                    <button onclick="removeFromCart(${index})">Удалить</button>
                 `;
                 total += item.price;
                 cartContainer.appendChild(productDiv);
             });
 
             cartSummary.innerHTML = `<h3>Итого: ${total}₽</h3>`;
-            document.getElementById('totalPrice').textContent = total;
-            buyButton.disabled = false;
         }
 
         // Применение промокода
         function applyPromoCode() {
             const promoCode = document.getElementById('promoInput').value;
-            if (promoCode.toUpperCase() === '73HW81KW2SP' && !getCookie('promoUsed')) {
-                alert('Промокод применён! Итоговая стоимость заказа: 10₽.');
-                setCookie('promoUsed', 'true', 7); // Запись в куки, что промокод использован
-                document.getElementById('totalPrice').textContent = 10; // Устанавливаем итоговую цену
+            if (promoCode === '73HW81KW2SP' && !getCookie('promoUsed')) {
+                setCookie('promoUsed', 'true', 7);
+                document.getElementById('totalPrice').textContent = 10;
+                document.getElementById('paymentMessage').style.display = 'block';
+                alert('Промокод успешно применён! Итоговая стоимость: 10 руб.');
             } else if (getCookie('promoUsed')) {
-                alert('Этот промокод уже использовался.');
+                alert('Этот промокод уже был использован.');
             } else {
                 alert('Неверный промокод.');
             }
         }
 
-        // Отображение корзины при загрузке
+        // Показ сообщения о платеже
+        function showPaymentMessage() {
+            const cart = JSON.parse(getCookie('cart') || '[]');
+            if (cart.length > 0) {
+                document.getElementById('paymentMessage').style.display = 'block';
+            } else {
+                alert('Ваша корзина пуста.');
+            }
+        }
+
+        // Инициализация корзины
         document.addEventListener('DOMContentLoaded', renderCart);
     </script>
 </body>
