@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #d4f1f4, #75e6da);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: #028090;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+            font-size: 1.5em;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            transition: transform 0.3s ease;
+        }
+
+        .product:hover {
+            transform: scale(1.02);
+        }
+
+        .product h2 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .product p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .product button {
+            background: #f44336;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .product button:hover {
+            background: #e53935;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #028090;
+            color: white;
+        }
+
+        .cart-button {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+            padding: 15px 20px;
+            background: #028090;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2em;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .cart-button:hover {
+            background: #026877;
+        }
+    </style>
+</head>
+<body>
+    <header>Корзина Магазина Чаёв</header>
+    
+    <div class="container" id="cart">
+        <h2>Загрузка корзины...</h2>
+    </div>
+
+    <footer>
+        &copy; 2024 Магазин Чаёв
+    </footer>
+
+    <a href="index.html" class="cart-button">Перейти к покупкам</a>
+
+    <script>
+        // Функция для получения куки
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Функция для установки куки
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+        }
+
+        // Функция удаления товара из корзины
+        function removeFromCart(index) {
+            const cart = JSON.parse(getCookie('cart') || '[]');
+            cart.splice(index, 1);
+            setCookie('cart', JSON.stringify(cart), 7);
+            renderCart();
+        }
+
+        // Функция отображения корзины
+        function renderCart() {
+            const cart = JSON.parse(getCookie('cart') || '[]');
+            const cartContainer = document.getElementById('cart');
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<h2>Ваша корзина пуста</h2>';
+                return;
+            }
+
+            cartContainer.innerHTML = '';
+            cart.forEach((item, index) => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <div>
+                        <h2>${item.name}</h2>
+                        <p>Цена: ${item.price}₽</p>
+                    </div>
+                    <button onclick="removeFromCart(${index})">Удалить</button>
+                `;
+                cartContainer.appendChild(productDiv);
+            });
+        }
+
+        // Инициализация корзины при загрузке страницы
+        document.addEventListener('DOMContentLoaded', renderCart);
+    </script>
+</body>
+</html>

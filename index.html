@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин Чаёв</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #d4f1f4, #75e6da);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: #028090;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+            font-size: 1.5em;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            transition: transform 0.3s ease;
+        }
+
+        .product:hover {
+            transform: scale(1.02);
+        }
+
+        .product h2 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .product p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .product button {
+            background: #028090;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .product button:hover {
+            background: #026877;
+        }
+
+        .cart-button {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+            padding: 15px 20px;
+            background: #028090;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2em;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .cart-button:hover {
+            background: #026877;
+        }
+    </style>
+</head>
+<body>
+    <header>Добро пожаловать в Магазин Чаёв!</header>
+
+    <div class="container">
+        <div class="product">
+            <div>
+                <h2>Зелёный чай Мохито</h2>
+                <p>Освежающий вкус зелёного чая с мятой и лаймом.</p>
+            </div>
+            <button onclick="addToCart('Зелёный чай Мохито', 250)">Добавить в корзину</button>
+        </div>
+
+        <div class="product">
+            <div>
+                <h2>Чёрный чай</h2>
+                <p>Классический чёрный чай с насыщенным вкусом.</p>
+            </div>
+            <button onclick="addToCart('Чёрный чай', 200)">Добавить в корзину</button>
+        </div>
+
+        <div class="product">
+            <div>
+                <h2>Чай с сахаром</h2>
+                <p>Идеальный сладкий чай для вашего утра.</p>
+            </div>
+            <button onclick="addToCart('Чай с сахаром', 180)">Добавить в корзину</button>
+        </div>
+    </div>
+
+    <a href="index2.html" class="cart-button">Перейти в корзину</a>
+
+    <script>
+        // Функция для добавления товара в корзину
+        function addToCart(name, price) {
+            const cart = JSON.parse(document.cookie.split('; ').find(row => row.startsWith('cart='))?.split('=')[1] || '[]');
+            cart.push({ name, price });
+            document.cookie = `cart=${JSON.stringify(cart)};path=/;max-age=604800`;
+            alert(`${name} добавлен в корзину!`);
+        }
+    </script>
+</body>
+</html>
