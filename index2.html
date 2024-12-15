@@ -74,6 +74,16 @@
             background: #e53935;
         }
 
+        .cart-summary {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .cart-summary h3 {
+            font-size: 1.2em;
+            color: #028090;
+        }
+
         footer {
             text-align: center;
             margin-top: 20px;
@@ -98,6 +108,30 @@
         .cart-button:hover {
             background: #026877;
         }
+
+        .buy-button {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .buy-button:hover {
+            background: #388E3C;
+        }
+
+        .payment-message {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+        }
     </style>
 </head>
 <body>
@@ -105,6 +139,16 @@
     
     <div class="container" id="cart">
         <h2>Загрузка корзины...</h2>
+    </div>
+
+    <div class="cart-summary" id="cart-summary">
+        <h3>Итого: 0₽</h3>
+    </div>
+
+    <button class="buy-button" id="buyButton">Купить</button>
+
+    <div class="payment-message" id="paymentMessage">
+        Для покупки переведите <span id="totalPrice">0</span> руб. на <a href="https://donationalerts.com/r/teawithtrojan" target="_blank">этот сайт</a>
     </div>
 
     <footer>
@@ -140,12 +184,20 @@
         function renderCart() {
             const cart = JSON.parse(getCookie('cart') || '[]');
             const cartContainer = document.getElementById('cart');
+            const cartSummary = document.getElementById('cart-summary');
+            const buyButton = document.getElementById('buyButton');
+            const paymentMessage = document.getElementById('paymentMessage');
+            const totalPriceElement = document.getElementById('totalPrice');
 
             if (cart.length === 0) {
                 cartContainer.innerHTML = '<h2>Ваша корзина пуста</h2>';
+                cartSummary.innerHTML = '<h3>Итого: 0₽</h3>';
+                buyButton.disabled = true;
+                paymentMessage.style.display = 'none';
                 return;
             }
 
+            let total = 0;
             cartContainer.innerHTML = '';
             cart.forEach((item, index) => {
                 const productDiv = document.createElement('div');
@@ -157,12 +209,29 @@
                     </div>
                     <button onclick="removeFromCart(${index})">Удалить</button>
                 `;
+                total += item.price;
                 cartContainer.appendChild(productDiv);
             });
+
+            cartSummary.innerHTML = `<h3>Итого: ${total}₽</h3>`;
+            totalPriceElement.textContent = total;
+            buyButton.disabled = false;
+            paymentMessage.style.display = 'none';
+        }
+
+        // Функция для отображения сообщения о платеже
+        function showPaymentMessage() {
+            const cart = JSON.parse(getCookie('cart') || '[]');
+            if (cart.length > 0) {
+                const total = cart.reduce((sum, item) => sum + item.price, 0);
+                document.getElementById('totalPrice').textContent = total;
+                document.getElementById('paymentMessage').style.display = 'block';
+            }
         }
 
         // Инициализация корзины при загрузке страницы
         document.addEventListener('DOMContentLoaded', renderCart);
+        document.getElementById('buyButton').addEventListener('click', showPaymentMessage);
     </script>
 </body>
 </html>
