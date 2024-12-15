@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кабинет Оператора Поддержки</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5AVrgG2NDmYc_guu5YzMJpNcgJFf22V4",
+            authDomain: "forum-c869d.firebaseapp.com",
+            databaseURL: "https://forum-c869d-default-rtdb.firebaseio.com",
+            projectId: "forum-c869d",
+            storageBucket: "forum-c869d.appspot.com",
+            messagingSenderId: "558313296876",
+            appId: "1:558313296876:web:5edfd4d79c80416878a6c9",
+            measurementId: "G-PG45MD0DZZ"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #028090;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #028090;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #028090;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        button:hover {
+            background-color: #026877;
+        }
+
+        .question {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+
+        .question p {
+            margin: 5px 0;
+        }
+
+        .question button {
+            background-color: #f44336;
+            border: none;
+            padding: 5px 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .question button:hover {
+            background-color: #e53935;
+        }
+
+        .answer-section {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>Кабинет Оператора Поддержки</header>
+
+<div class="container">
+    <h1>Вопросы от пользователей</h1>
+    <div id="questionsList"></div>
+
+    <div class="answer-section">
+        <h2>Ответить на вопрос</h2>
+        <textarea id="answerText" placeholder="Введите ответ на вопрос" required></textarea><br>
+        <button onclick="sendAnswer()">Ответить</button>
+    </div>
+</div>
+
+<script>
+    let currentQuestionId = null;
+
+    function loadQuestions() {
+        const questionsList = document.getElementById("questionsList");
+        questionsList.innerHTML = '';
+
+        db.collection("questions").where("answer", "==", '').orderBy("timestamp", "asc").get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                questionDiv.innerHTML = `
+                    <p><strong>Вопрос:</strong> ${data.question}</p>
+                    <button onclick="selectQuestion('${doc.id}', '${data.question}')">Ответить</button>
+                `;
+                questionsList.appendChild(questionDiv);
+            });
+        });
+    }
+
+    function selectQuestion(questionId, questionText) {
+        currentQuestionId = questionId;
+        document.getElementById("answerText").value = '';
+        alert(`Вы выбрали вопрос: ${questionText}`);
+    }
+
+    function sendAnswer() {
+        const answer = document.getElementById("answerText").value;
+        if (currentQuestionId && answer) {
+            db.collection("questions").doc(currentQuestionId).update({
+                answer: answer
+            }).then(() => {
+                alert("Ответ отправлен!");
+                loadQuestions();
+            });
+        } else {
+            alert("Выберите вопрос и напишите ответ.");
+        }
+    }
+
+    loadQuestions();
+</script>
+
+</body>
+</html>
