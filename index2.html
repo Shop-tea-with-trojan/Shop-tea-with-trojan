@@ -132,6 +132,11 @@
             text-align: center;
             font-size: 1.2em;
         }
+
+        .promo-code {
+            margin-top: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -143,6 +148,11 @@
 
     <div class="cart-summary" id="cart-summary">
         <h3>Итого: 0₽</h3>
+    </div>
+
+    <div class="promo-code">
+        <input type="text" id="promoInput" placeholder="Введите промокод">
+        <button onclick="applyPromoCode()">Применить промокод</button>
     </div>
 
     <button class="buy-button" id="buyButton">Купить</button>
@@ -227,6 +237,25 @@
                 document.getElementById('totalPrice').textContent = total;
                 document.getElementById('paymentMessage').style.display = 'block';
             }
+        }
+
+        // Применение промокода
+        function applyPromoCode() {
+            const promoCode = document.getElementById('promoInput').value;
+            const cart = JSON.parse(getCookie('cart') || '[]');
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            let discount = 0;
+
+            if (promoCode.toLowerCase() === 'nosok') {
+                discount = total * 0.25;
+                alert(`Промокод применён! Скидка 25% (${discount}₽)`);
+            } else {
+                alert('Неверный промокод');
+            }
+
+            const finalPrice = total - discount;
+            document.getElementById('totalPrice').textContent = finalPrice;
+            document.getElementById('paymentMessage').style.display = 'block';
         }
 
         // Инициализация корзины при загрузке страницы
