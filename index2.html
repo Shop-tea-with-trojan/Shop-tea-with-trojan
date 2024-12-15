@@ -11,7 +11,6 @@
             padding: 0;
             background: linear-gradient(to bottom, #d4f1f4, #75e6da);
             color: #333;
-            overflow-x: hidden;
         }
 
         header {
@@ -84,29 +83,17 @@
             color: #028090;
         }
 
+        .promo-code {
+            margin-top: 20px;
+            text-align: center;
+        }
+
         footer {
             text-align: center;
             margin-top: 20px;
             padding: 10px;
             background: #028090;
             color: white;
-        }
-
-        .cart-button {
-            display: block;
-            margin: 20px auto;
-            text-align: center;
-            padding: 15px 20px;
-            background: #028090;
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.2em;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-
-        .cart-button:hover {
-            background: #026877;
         }
 
         .buy-button {
@@ -133,9 +120,22 @@
             font-size: 1.2em;
         }
 
-        .promo-code {
-            margin-top: 20px;
-            text-align: center;
+        .promo-code input {
+            padding: 10px;
+            font-size: 1em;
+        }
+
+        .promo-code button {
+            padding: 10px 15px;
+            background: #028090;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .promo-code button:hover {
+            background: #026877;
         }
     </style>
 </head>
@@ -155,17 +155,15 @@
         <button onclick="applyPromoCode()">Применить промокод</button>
     </div>
 
-    <button class="buy-button" id="buyButton">Купить</button>
+    <button class="buy-button" id="buyButton" disabled>Купить</button>
 
     <div class="payment-message" id="paymentMessage">
-        Для покупки переведите <span id="totalPrice">0</span> руб. на <a href="https://donationalerts.com/r/teawithtrojan" target="_blank">этот сайт</a>
+        Для покупки переведите <span id="totalPrice">0</span> руб. на <a href="https://donationalerts.com/r/teawithtrojan" target="_blank">этот сайт</a>.
     </div>
 
     <footer>
         &copy; 2024 Магазин Чаёв
     </footer>
-
-    <a href="index.html" class="cart-button">Перейти к покупкам</a>
 
     <script>
         // Функция для получения куки
@@ -196,14 +194,11 @@
             const cartContainer = document.getElementById('cart');
             const cartSummary = document.getElementById('cart-summary');
             const buyButton = document.getElementById('buyButton');
-            const paymentMessage = document.getElementById('paymentMessage');
-            const totalPriceElement = document.getElementById('totalPrice');
 
             if (cart.length === 0) {
                 cartContainer.innerHTML = '<h2>Ваша корзина пуста</h2>';
                 cartSummary.innerHTML = '<h3>Итого: 0₽</h3>';
                 buyButton.disabled = true;
-                paymentMessage.style.display = 'none';
                 return;
             }
 
@@ -224,43 +219,26 @@
             });
 
             cartSummary.innerHTML = `<h3>Итого: ${total}₽</h3>`;
-            totalPriceElement.textContent = total;
+            document.getElementById('totalPrice').textContent = total;
             buyButton.disabled = false;
-            paymentMessage.style.display = 'none';
-        }
-
-        // Функция для отображения сообщения о платеже
-        function showPaymentMessage() {
-            const cart = JSON.parse(getCookie('cart') || '[]');
-            if (cart.length > 0) {
-                const total = cart.reduce((sum, item) => sum + item.price, 0);
-                document.getElementById('totalPrice').textContent = total;
-                document.getElementById('paymentMessage').style.display = 'block';
-            }
         }
 
         // Применение промокода
         function applyPromoCode() {
             const promoCode = document.getElementById('promoInput').value;
-            const cart = JSON.parse(getCookie('cart') || '[]');
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            let discount = 0;
-
-            if (promoCode.toLowerCase() === 'nosok') {
-                discount = total * 0.25;
-                alert(`Промокод применён! Скидка 25% (${discount}₽)`);
+            if (promoCode.toUpperCase() === '73HW81KW2SP' && !getCookie('promoUsed')) {
+                alert('Промокод применён! Итоговая стоимость заказа: 10₽.');
+                setCookie('promoUsed', 'true', 7); // Запись в куки, что промокод использован
+                document.getElementById('totalPrice').textContent = 10; // Устанавливаем итоговую цену
+            } else if (getCookie('promoUsed')) {
+                alert('Этот промокод уже использовался.');
             } else {
-                alert('Неверный промокод');
+                alert('Неверный промокод.');
             }
-
-            const finalPrice = total - discount;
-            document.getElementById('totalPrice').textContent = finalPrice;
-            document.getElementById('paymentMessage').style.display = 'block';
         }
 
-        // Инициализация корзины при загрузке страницы
+        // Отображение корзины при загрузке
         document.addEventListener('DOMContentLoaded', renderCart);
-        document.getElementById('buyButton').addEventListener('click', showPaymentMessage);
     </script>
 </body>
 </html>
