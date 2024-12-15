@@ -7,11 +7,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #d4f1f4, #75e6da);
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom, #d4f1f4, #75e6da);
-            color: #333;
-            overflow-x: hidden;
         }
 
         header {
@@ -29,6 +27,11 @@
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
         }
 
         .product {
@@ -56,6 +59,18 @@
             color: #555;
         }
 
+        .product .price {
+            font-size: 1.2em;
+            color: #028090;
+            text-decoration: line-through;
+            margin-right: 10px;
+        }
+
+        .product .discounted-price {
+            font-size: 1.5em;
+            color: #f44336;
+        }
+
         .product button {
             background: #028090;
             color: #fff;
@@ -68,6 +83,14 @@
 
         .product button:hover {
             background: #026877;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #028090;
+            color: white;
         }
 
         .cart-button {
@@ -89,44 +112,79 @@
     </style>
 </head>
 <body>
-    <header>Добро пожаловать в Магазин Чаёв!</header>
 
-    <div class="container">
-        <div class="product">
-            <div>
-                <h2>Зелёный чай Мохито</h2>
-                <p>Освежающий вкус зелёного чая с мятой и лаймом.</p>
-            </div>
-            <button onclick="addToCart('Зелёный чай Мохито', 250)">Добавить в корзину</button>
-        </div>
+<header>Магазин Чаёв</header>
 
-        <div class="product">
-            <div>
-                <h2>Чёрный чай</h2>
-                <p>Классический чёрный чай с насыщенным вкусом.</p>
-            </div>
-            <button onclick="addToCart('Чёрный чай', 200)">Добавить в корзину</button>
+<div class="container">
+    <h1>Наши Чаи со Скидкой 50%!</h1>
+    
+    <div class="product">
+        <div>
+            <h2>Чай "Зеленый с лимоном"</h2>
+            <p>Очень освежающий и полезный чай с добавлением лимона.</p>
         </div>
-
-        <div class="product">
-            <div>
-                <h2>Чай с сахаром</h2>
-                <p>Идеальный сладкий чай для вашего утра.</p>
-            </div>
-            <button onclick="addToCart('Чай с сахаром', 180)">Добавить в корзину</button>
+        <div>
+            <p class="price">300₽</p>
+            <p class="discounted-price">150₽</p>
         </div>
+        <button onclick="addToCart('Зеленый с лимоном', 150)">Добавить в корзину</button>
+    </div>
+    
+    <div class="product">
+        <div>
+            <h2>Чай "Чёрный с кардамоном"</h2>
+            <p>Чёрный чай с насыщенным вкусом и пряным ароматом кардамона.</p>
+        </div>
+        <div>
+            <p class="price">250₽</p>
+            <p class="discounted-price">125₽</p>
+        </div>
+        <button onclick="addToCart('Чёрный с кардамоном', 125)">Добавить в корзину</button>
     </div>
 
-    <a href="index2.html" class="cart-button">Перейти в корзину</a>
+    <div class="product">
+        <div>
+            <h2>Чай "Мятный"</h2>
+            <p>Приятный мятный вкус для расслабления.</p>
+        </div>
+        <div>
+            <p class="price">220₽</p>
+            <p class="discounted-price">110₽</p>
+        </div>
+        <button onclick="addToCart('Мятный', 110)">Добавить в корзину</button>
+    </div>
 
-    <script>
-        // Функция для добавления товара в корзину
-        function addToCart(name, price) {
-            const cart = JSON.parse(document.cookie.split('; ').find(row => row.startsWith('cart='))?.split('=')[1] || '[]');
-            cart.push({ name, price });
-            document.cookie = `cart=${JSON.stringify(cart)};path=/;max-age=604800`;
-            alert(`${name} добавлен в корзину!`);
-        }
-    </script>
+</div>
+
+<a href="cart.html" class="cart-button">Перейти в корзину</a>
+
+<footer>
+    &copy; 2024 Магазин Чаёв
+</footer>
+
+<script>
+    // Функция для добавления товара в корзину
+    function addToCart(name, price) {
+        let cart = JSON.parse(getCookie('cart') || '[]');
+        cart.push({ name: name, price: price });
+        setCookie('cart', JSON.stringify(cart), 7);
+        alert('Товар добавлен в корзину!');
+    }
+
+    // Функция для получения куки
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Функция для установки куки
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+    }
+</script>
+
 </body>
 </html>
